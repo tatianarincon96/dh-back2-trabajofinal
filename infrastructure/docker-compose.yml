@@ -1,0 +1,95 @@
+version: "3.2" 
+
+services:
+  zipkin:
+    container_name: infra-zipkin
+    image: openzipkin/zipkin:2
+    ports:
+      - 9411:9411
+  rabbitmq:
+    container_name: infra-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+  config-server:
+    build:
+      context: ../config-server
+    ports:
+      - "8888:8888"
+  eureka-service:
+    build:
+      context: ../registry-service
+    ports:
+      - "8761:8761"
+    restart: always
+  movie-service:
+    build:
+      context: ../movie-service
+    ports:
+      - "8081:8081"
+    restart: always
+    depends_on: 
+      - db-mysql-movie
+  serie-service:
+    build:
+      context: ../serie-service
+    ports:
+      - "8082:8082"
+    restart: always
+    depends_on: 
+      - db-mongo-serie
+  catalog-service:
+    build:
+      context: ../catalog-service
+    ports:
+      - "8091:8091"
+    restart: always
+    depends_on: 
+      - db-mongo-catalog
+  gateway-service:
+    build:
+      context: ../gateway-service
+    ports:
+      - "8080:8080"
+    restart: always
+  db-mysql-movie:
+    image: mysql:5.7
+    container_name: movie-db
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: movie_database
+      MYSQL_ROOT_PASSWORD: root
+  db-mongo-serie:
+    image: bitnami/mongodb:latest
+    container_name: serie-mongo-db
+    ports:
+      - 27018:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=serie_database
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_PORT_NUMBER="27018"
+    volumes:
+      - ./db-init/initialize-serie-database.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - series-db:/bitnami/mongodb
+  db-mongo-catalog:
+    image: bitnami/mongodb:latest
+    container_name: catalog-mongo-db
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=catalog_database
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_PORT_NUMBER="27017"
+    volumes:
+      - ./db-init/initialize-catalog-database.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - catalog-db:/bitnami/mongodb
+
+volumes:
+  series-db:
+  catalog-db:
+  
