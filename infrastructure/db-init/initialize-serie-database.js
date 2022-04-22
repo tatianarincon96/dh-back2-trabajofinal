@@ -29,11 +29,11 @@ const objectsToBeInserted = [
     genre: "Action",
     seasons: [
       {
-        id: 1,
+        _id: 1,
         seasonNumber: 1,
         chapters: [
           {
-            id: 1,
+            _id: 1,
             name: "Pilot",
             number: 1,
             urlStream: "https://www.netflix.com/breakingbad/81038598",
@@ -48,11 +48,11 @@ const objectsToBeInserted = [
     genre: "Comedy",
     seasons: [
       {
-        id: 1,
+        _id: 1,
         seasonNumber: 1,
         chapters: [
           {
-            id: 1,
+            _id: 1,
             name: "The Pilot",
             number: 1,
             urlStream: "https://www.netflix.com/friends/81038598",
